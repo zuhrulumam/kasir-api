@@ -51,15 +51,15 @@ func main() {
 	productHandler := handlers.NewProductHandler(productService)
 
 	// Setup routes
-	http.HandleFunc("/api/produk", productHandler.HandleProducts)
+	http.HandleFunc("/api/produk", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
 
-	http.HandleFunc("/api/produk/", apiKeyMiddleware(productHandler.HandleProductByID))
+	http.HandleFunc("/api/produk/", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
 
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
-	http.HandleFunc("/api/checkout", apiKeyMiddleware(transactionHandler.Checkout))
+	http.HandleFunc("/api/checkout", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(transactionHandler.Checkout))))
 
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
